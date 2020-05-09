@@ -9,7 +9,11 @@ services:
     container_name: "nodejs-nodejs_mongodb-techwithus"
     restart: "always"
     ports:
-      - "${NODEJSPORT}:7777"
+      - "${NODEJSPORT}:3000"
+    volumes:
+      - ${NODEJS_LOGS_DIR-./logs/nodejs/}:/root/.npm/_logs/
+      - ${NODEJS_APP_LOGS_DIR-./logs/app_nodejs/}:/usr/share/nodejs/logs/
+    working_dir: /usr/share/nodejs/
     environment:
       - NODE_ENV=${NODEJSDEPLOYMENTMODEL}
     command: "npm start"
@@ -43,7 +47,7 @@ services:
     container_name: "mongo_express-nodejs_mongodb-techwithus"
     restart: always
     ports:
-      - ${MONGOEXPRESS_PORT}:8081
+      - "${MONGOEXPRESS_PORT}:8081"
     links:
       - mongodb
     environment:
