@@ -1,5 +1,6 @@
 FROM node:12
 LABEL createdby="Sashwat K <sashwat0001@gmail.com>"
+LABEL maintainer="Tech With Us <dev@techwithus.com>"
 
 # Update container
 RUN apt-get update -y
