@@ -1,0 +1,52 @@
+version: "3.7"
+
+services:
+  # NodeJS
+  nodejs:
+    build:
+      context: ./bin/nodejs
+    image: techwithus/nodejs_mongodb:nodejs
+    container_name: "nodejs-nodejs_mongodb-techwithus"
+    restart: "always"
+    ports:
+      - "${NODEJSPORT}:7777"
+    environment:
+      - NODE_ENV=${NODEJSDEPLOYMENTMODEL}
+    command: "npm start"
+    links:
+      - mongodb
+
+  # MongoDB
+  mongodb:
+    build:
+      context: ./bin/mongodb
+    image: techwithus/nodejs_mongodb:mongodb
+    container_name: "mongodb-nodejs_mongodb-techwithus"
+    restart: "always"
+    ports:
+      - "${MONGODB_PORT}:27017"
+    volumes:
+      - ${MONGODB_DATA_DIR-./data/mongodb}:/data/db
+      - ${MONGODB_CONFIG_DIR-./config/mongodb/mongod.conf}:/etc/mongo/mongod.conf
+      - ${MONGODB_LOG_DIR-./logs/mongodb/}:/var/log/mongodb/
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
+    command: --config /etc/mongo/mongod.conf
+
+  # Mongo Express
+  mongo-express:
+    build:
+      context: ./bin/mongo-express
+    image: techwithus/nodejs_mongodb:mongo-express
+    container_name: "mongo_express-nodejs_mongodb-techwithus"
+    restart: always
+    ports:
+      - ${MONGOEXPRESS_PORT}:8081
+    links:
+      - mongodb
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_PASSWORD}
